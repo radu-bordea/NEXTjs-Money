@@ -1,0 +1,29 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Income {
+  id          String   @id @default(cuid())
+  userId      String // clerk id
+  amount      Float
+  date        DateTime
+  category    String   // free text — "Salary", "Freelance", "Crypto sale"
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  userId      String // clerk id
+  amount      Float
+  date        DateTime
+  category    String   // free text — "Rent", "Groceries", "Subscriptions"
+  description String?
+  createdAt   DateTime @default(now())
+}
