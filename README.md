@@ -5,6 +5,8 @@
 - npm install @clerk/nextjs
 - npm install zod
 - npm install react-hook-form @hookform/resolvers
+- npm i lucide-react
+- npm install recharts
 
 # prisma
 - npm install prisma tsx @types/pg --save-dev

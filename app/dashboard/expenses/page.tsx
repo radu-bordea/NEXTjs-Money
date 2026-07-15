@@ -29,6 +29,10 @@ export default async function ExpensesPage() {
             >
               <div>
                 <span>{e.category}</span>
+                <span className="text-zinc-400">
+                  {' '}
+                  · {e.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
                 {e.description && (
                   <span className="text-zinc-400"> — {e.description}</span>
                 )}
