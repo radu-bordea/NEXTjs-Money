@@ -1,14 +1,16 @@
-import { auth } from '@clerk/nextjs/server'
-import prisma from '@/lib/prisma'
-import { ExpenseForm } from '@/components/expense-form'
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
+import { ExpenseForm } from "@/components/expense-form";
+import { deleteExpense } from "@/app/actions";
+import { DeleteButton } from "@/components/delete-button";
 
 export default async function ExpensesPage() {
-  const { userId } = await auth.protect()
+  const { userId } = await auth.protect();
 
   const expenses = await prisma.expense.findMany({
     where: { userId },
-    orderBy: { date: 'desc' },
-  })
+    orderBy: { date: "desc" },
+  });
 
   return (
     <div className="max-w-2xl mx-auto p-8">
@@ -21,16 +23,24 @@ export default async function ExpensesPage() {
       ) : (
         <ul className="space-y-1">
           {expenses.map((e) => (
-            <li key={e.id} className="flex justify-between text-sm border-b border-zinc-100 dark:border-zinc-800 py-2">
+            <li
+              key={e.id}
+              className="flex justify-between items-center text-sm border-b border-zinc-100 dark:border-zinc-800 py-2"
+            >
               <div>
                 <span>{e.category}</span>
-                {e.description && <span className="text-zinc-400"> — {e.description}</span>}
+                {e.description && (
+                  <span className="text-zinc-400"> — {e.description}</span>
+                )}
               </div>
-              <span>{e.amount} kr</span>
+              <div className="flex items-center gap-3">
+                <span>{e.amount} kr</span>
+                <DeleteButton action={deleteExpense.bind(null, e.id)} />
+              </div>
             </li>
           ))}
         </ul>
       )}
     </div>
-  )
+  );
 }
