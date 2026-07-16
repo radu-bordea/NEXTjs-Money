@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 import { IncomeExpensePie } from '@/components/income-expense-pie'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react'
 
 function parseMonthParam(month?: string) {
   if (month) {
@@ -44,7 +44,6 @@ export default async function DashboardPage({
   const prevMonth = new Date(reference.getFullYear(), reference.getMonth() - 1, 1)
   const nextMonth = new Date(reference.getFullYear(), reference.getMonth() + 1, 1)
 
-  // don't let people navigate into the future past the current month
   const now = new Date()
   const isCurrentMonth =
     reference.getFullYear() === now.getFullYear() && reference.getMonth() === now.getMonth()
@@ -63,6 +62,9 @@ export default async function DashboardPage({
   const totalIncome = monthIncome.reduce((sum, r) => sum + r.amount, 0)
   const totalExpenses = monthExpenses.reduce((sum, r) => sum + r.amount, 0)
   const net = totalIncome - totalExpenses
+
+  const unpaidExpenses = monthExpenses.filter((e) => e.status === 'UNPAID')
+  const unpaidTotal = unpaidExpenses.reduce((sum, e) => sum + e.amount, 0)
 
   const monthLabel = reference.toLocaleDateString('en-GB', {
     month: 'long',
@@ -132,6 +134,37 @@ export default async function DashboardPage({
           </div>
         </div>
       </div>
+
+      {/* unpaid bills — only shows up if there's something to act on */}
+      {unpaidExpenses.length > 0 && (
+        <div className="rounded-xl border border-expense/30 bg-expense/5 p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle size={16} className="text-expense" />
+              <h2 className="text-sm font-medium">
+                {unpaidExpenses.length} unpaid this month
+              </h2>
+            </div>
+            <span className="text-sm font-semibold text-expense">
+              {formatNOK(unpaidTotal)} kr
+            </span>
+          </div>
+          <ul className="space-y-1">
+            {unpaidExpenses.map((e) => (
+              <li key={e.id} className="flex justify-between text-sm py-1">
+                <span>{e.category}</span>
+                <span className="text-muted">{formatNOK(e.amount)} kr</span>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/dashboard/expenses"
+            className="text-xs text-accent hover:underline mt-2 inline-block"
+          >
+            Go mark them paid →
+          </Link>
+        </div>
+      )}
 
       {/* chart + recent activity — stacked on mobile, side by side from md up */}
       <div className="grid md:grid-cols-2 gap-4">

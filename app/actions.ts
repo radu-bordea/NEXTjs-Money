@@ -106,3 +106,17 @@ export async function deleteExpense(id: string) {
   revalidatePath('/dashboard/expenses')
   revalidatePath('/dashboard')
 }
+
+export async function toggleExpenseStatus(id:string, currentStatus: 'PAID' | 'UNPAID') {
+  const {userId} = await auth.protect()
+
+  const newStatus = currentStatus === 'PAID' ? 'UNPAID' : 'PAID';
+
+  await prisma.expense.updateMany({
+    where: { id, userId },  // same scoping pattern as delete/update — no separate ownership check needed
+    data: { status: newStatus }
+  })
+
+  revalidatePath('/dashboard/expenses')
+  revalidatePath('/dashboard')
+}

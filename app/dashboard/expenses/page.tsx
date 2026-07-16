@@ -5,6 +5,8 @@ import { ExpenseForm } from "@/components/expense-form";
 import { deleteExpense } from "@/app/actions";
 import { DeleteButton } from "@/components/delete-button";
 
+import { StatusBadge } from "@/components/status-badge";
+
 export default async function ExpensesPage() {
   const { userId } = await auth.protect();
 
@@ -31,8 +33,13 @@ export default async function ExpensesPage() {
               <div>
                 <span>{e.category}</span>
                 <span className="text-zinc-400">
-                  {' '}
-                  · {e.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  {" "}
+                  ·{" "}
+                  {e.date.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </span>
                 {e.description && (
                   <span className="text-zinc-400"> — {e.description}</span>
@@ -47,6 +54,17 @@ export default async function ExpensesPage() {
                   Edit
                 </Link>
                 <DeleteButton action={deleteExpense.bind(null, e.id)} />
+                <div className="flex items-center gap-3">
+                  <StatusBadge id={e.id} status={e.status} />
+                  <span>{e.amount} kr</span>
+                  <Link
+                    href={`/dashboard/expenses/${e.id}/edit`}
+                    className="text-xs text-muted hover:text-foreground"
+                  >
+                    Edit
+                  </Link>
+                  <DeleteButton action={deleteExpense.bind(null, e.id)} />
+                </div>
               </div>
             </li>
           ))}

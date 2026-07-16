@@ -25,5 +25,12 @@ model Expense {
   date        DateTime
   category    String   // free text — "Rent", "Groceries", "Subscriptions"
   description String?
+  status      PaymentStatus @default(UNPAID)
   createdAt   DateTime @default(now())
 }
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+}
+

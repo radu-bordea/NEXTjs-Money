@@ -15,3 +15,4 @@
 - npx prisma migrate dev --name init
 - npx prisma generate
 - npx prisma studio
+- npx prisma migrate dev --name add_expense_status
