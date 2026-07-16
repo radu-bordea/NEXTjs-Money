@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { ExpenseForm } from "@/components/expense-form";
 import { deleteExpense } from "@/app/actions";
 import { DeleteButton } from "@/components/delete-button";
-
 import { StatusBadge } from "@/components/status-badge";
 
 export default async function ExpensesPage() {
@@ -28,35 +27,26 @@ export default async function ExpensesPage() {
           {expenses.map((e) => (
             <li
               key={e.id}
-              className="flex justify-between items-center text-sm border-b border-zinc-100 dark:border-zinc-800 py-2"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border py-3"
             >
-              <div>
-                <span>{e.category}</span>
-                <span className="text-zinc-400">
-                  {" "}
-                  ·{" "}
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-medium truncate">{e.category}</span>
+                  <StatusBadge id={e.id} status={e.status} />
+                </div>
+                <div className="text-xs text-muted mt-0.5">
                   {e.date.toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
                   })}
-                </span>
-                {e.description && (
-                  <span className="text-zinc-400"> — {e.description}</span>
-                )}
+                  {e.description && <> — {e.description}</>}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span>{e.amount} kr</span>
-                <Link
-                  href={`/dashboard/expenses/${e.id}/edit`}
-                  className="text-xs text-muted hover:text-foreground"
-                >
-                  Edit
-                </Link>
-                <DeleteButton action={deleteExpense.bind(null, e.id)} />
-                <div className="flex items-center gap-3">
-                  <StatusBadge id={e.id} status={e.status} />
-                  <span>{e.amount} kr</span>
+
+              <div className="flex items-center justify-between sm:justify-end gap-3">
+                <span className="font-mono text-sm">{e.amount} kr</span>
+                <div className="flex items-center gap-3 shrink-0">
                   <Link
                     href={`/dashboard/expenses/${e.id}/edit`}
                     className="text-xs text-muted hover:text-foreground"

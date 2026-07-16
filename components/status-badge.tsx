@@ -12,7 +12,7 @@ export function StatusBadge({ id, status }: { id: string; status: Status }) {
     <button
       onClick={() => startTransition(() => toggleExpenseStatus(id, status))}
       disabled={isPending}
-      className={`text-xs font-medium rounded-full px-2 py-0.5 transition-opacity hover:opacity-80 disabled:opacity-50 ${
+      className={`text-xs font-medium rounded-full px-2 py-0.5 cursor-pointer transition-opacity hover:opacity-80 disabled:opacity-50 ${
         status === 'PAID'
           ? 'bg-income/15 text-income'
           : 'bg-expense/15 text-expense'

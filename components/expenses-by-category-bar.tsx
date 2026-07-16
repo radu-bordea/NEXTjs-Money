@@ -36,6 +36,7 @@ export function ExpensesByCategoryBar({
           tickLine={false}
         />
         <Tooltip
+        cursor={{ fill: 'var(--surface-2)' }}
           formatter={(value) => `${Number(value).toLocaleString('nb-NO')} kr`}
           contentStyle={{
             background: 'var(--surface)',

@@ -12,7 +12,7 @@ export function DeleteButton({ action }: { action: () => Promise<void> }) {
         startTransition(() => action())
       }}
       disabled={isPending}
-      className="text-xs text-muted hover:text-red-500 disabled:opacity-50"
+      className="text-xs text-muted hover:text-red-500 disabled:opacity-50 cursor-pointer"
     >
       {isPending ? '…' : 'Delete'}
     </button>

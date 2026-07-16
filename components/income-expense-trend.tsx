@@ -23,6 +23,7 @@ export function IncomeExpenseTrend({
         <XAxis dataKey="month" tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
         <Tooltip
+        cursor={{ fill: 'var(--surface-2)' }}
           formatter={(value) => `${Number(value).toLocaleString('nb-NO')} kr`}
           contentStyle={{
             background: 'var(--surface)',

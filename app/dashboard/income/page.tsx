@@ -26,27 +26,31 @@ export default async function IncomePage() {
           {incomes.map((i) => (
             <li
               key={i.id}
-              className="flex justify-between items-center text-sm border-b border-zinc-100 dark:border-zinc-800 py-2"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border py-3"
             >
-              <div>
-                <span>{i.category}</span>
-                <span className="text-zinc-400">
-                  {' '}
-                  · {i.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </span>
-                {i.description && (
-                  <span className="text-zinc-400"> — {i.description}</span>
-                )}
+              <div className="min-w-0">
+                <span className="font-medium truncate">{i.category}</span>
+                <div className="text-xs text-muted mt-0.5">
+                  {i.date.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                  {i.description && <> — {i.description}</>}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span>{i.amount} kr</span>
-                <Link
-                  href={`/dashboard/income/${i.id}/edit`}
-                  className="text-xs text-muted hover:text-foreground"
-                >
-                  Edit
-                </Link>
-                <DeleteButton action={deleteIncome.bind(null, i.id)} />
+
+              <div className="flex items-center justify-between sm:justify-end gap-3">
+                <span className="font-mono text-sm">{i.amount} kr</span>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    href={`/dashboard/income/${i.id}/edit`}
+                    className="text-xs text-muted hover:text-foreground"
+                  >
+                    Edit
+                  </Link>
+                  <DeleteButton action={deleteIncome.bind(null, i.id)} />
+                </div>
               </div>
             </li>
           ))}

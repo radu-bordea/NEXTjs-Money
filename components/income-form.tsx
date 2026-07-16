@@ -105,7 +105,7 @@ export function IncomeForm({ income }: { income?: ExistingIncome }) {
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-md bg-black dark:bg-white text-white dark:text-black text-sm font-medium px-4 py-2 hover:opacity-90 disabled:opacity-50"
+        className="self-start rounded-md bg-black dark:bg-white text-white dark:text-black text-sm font-medium px-4 py-2 hover:opacity-90 disabled:opacity-50 cursor-pointer"
       >
         {isPending ? (isEditing ? 'Saving…' : 'Adding…') : (isEditing ? 'Save changes' : 'Add income')}
       </button>
