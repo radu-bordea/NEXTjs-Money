@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { ExpenseForm } from "@/components/expense-form";
@@ -39,6 +40,12 @@ export default async function ExpensesPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span>{e.amount} kr</span>
+                <Link
+                  href={`/dashboard/expenses/${e.id}/edit`}
+                  className="text-xs text-muted hover:text-foreground"
+                >
+                  Edit
+                </Link>
                 <DeleteButton action={deleteExpense.bind(null, e.id)} />
               </div>
             </li>

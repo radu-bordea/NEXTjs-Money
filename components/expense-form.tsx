@@ -3,30 +3,44 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTransition } from 'react'
-import { expenseSchema, type ExpenseFormValues } from '@/lib/validations'
-import { createExpense } from '@/app/actions'
+import { expenseSchema, type ExpenseFormValues, type ExpenseFormInput } from '@/lib/validations'
+import { createExpense, updateExpense } from '@/app/actions'
 
-export function ExpenseForm() {
+type ExistingExpense = {
+  id: string
+  amount: number
+  date: Date
+  category: string
+  description: string | null
+}
+
+export function ExpenseForm({ expense }: { expense?: ExistingExpense }) {
   const [isPending, startTransition] = useTransition()
+  const isEditing = !!expense
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ExpenseFormValues>({
-    resolver: zodResolver(expenseSchema),
-    defaultValues: {
-      date: new Date(),
-      category: '',
-      description: '',
-    },
-  })
+const {
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors },
+} = useForm<ExpenseFormInput, unknown, ExpenseFormValues>({
+  resolver: zodResolver(expenseSchema),
+  defaultValues: {
+    amount: expense?.amount,
+    date: expense?.date ?? new Date(),
+    category: expense?.category ?? '',
+    description: expense?.description ?? '',
+  },
+})
 
   function onSubmit(values: ExpenseFormValues) {
     startTransition(async () => {
-      await createExpense(values)
-      reset({ date: new Date(), category: '', description: '', amount: undefined })
+      if (isEditing) {
+        await updateExpense(expense.id, values)
+      } else {
+        await createExpense(values)
+        reset({ date: new Date(), category: '', description: '', amount: undefined })
+      }
     })
   }
 
@@ -56,7 +70,7 @@ export function ExpenseForm() {
             id="date"
             type="date"
             {...register('date', { valueAsDate: true })}
-            defaultValue={new Date().toISOString().slice(0, 10)}
+            defaultValue={(expense?.date ?? new Date()).toISOString().slice(0, 10)}
             className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm"
           />
           {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date.message}</p>}
@@ -93,7 +107,7 @@ export function ExpenseForm() {
         disabled={isPending}
         className="self-start rounded-md bg-black dark:bg-white text-white dark:text-black text-sm font-medium px-4 py-2 hover:opacity-90 disabled:opacity-50"
       >
-        {isPending ? 'Adding…' : 'Add expense'}
+        {isPending ? (isEditing ? 'Saving…' : 'Adding…') : (isEditing ? 'Save changes' : 'Add expense')}
       </button>
     </form>
   )

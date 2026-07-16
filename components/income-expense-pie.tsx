@@ -1,27 +1,27 @@
-'use client'
+"use client";
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 export function IncomeExpensePie({
   totalIncome,
   totalExpenses,
 }: {
-  totalIncome: number
-  totalExpenses: number
+  totalIncome: number;
+  totalExpenses: number;
 }) {
   const data = [
-    { name: 'Income', value: totalIncome, color: 'var(--income)' },
-    { name: 'Expenses', value: totalExpenses, color: 'var(--expense)' },
-  ]
+    { name: "Income", value: totalIncome, color: "var(--income)" },
+    { name: "Expenses", value: totalExpenses, color: "var(--expense)" },
+  ];
 
-  const hasData = totalIncome > 0 || totalExpenses > 0
+  const hasData = totalIncome > 0 || totalExpenses > 0;
 
   if (!hasData) {
     return (
       <div className="flex h-48 items-center justify-center text-sm text-muted">
         No data yet this month.
       </div>
-    )
+    );
   }
 
   return (
@@ -41,15 +41,15 @@ export function IncomeExpensePie({
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => `${value.toLocaleString('nb-NO')} kr`}
+          formatter={(value) => `${Number(value).toLocaleString("nb-NO")} kr`}
           contentStyle={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 8,
             fontSize: 13,
           }}
         />
       </PieChart>
     </ResponsiveContainer>
-  )
+  );
 }

@@ -33,7 +33,7 @@ export default function DashboardLayout({
             ))}
           </div>
         </div>
-        <UserButton afterSignOutUrl="/" />
+        <UserButton />
       </nav>
       <main>{children}</main>
     </div>

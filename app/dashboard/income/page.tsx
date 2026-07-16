@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { IncomeForm } from "@/components/income-form";
@@ -22,27 +23,33 @@ export default async function IncomePage() {
         <p className="text-sm text-zinc-400">No income logged yet.</p>
       ) : (
         <ul className="space-y-1">
-{incomes.map((i) => (
-  <li
-    key={i.id}
-    className="flex justify-between items-center text-sm border-b border-zinc-100 dark:border-zinc-800 py-2"
-  >
-    <div>
-      <span>{i.category}</span>
-      <span className="text-zinc-400">
-        {' '}
-        · {i.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-      </span>
-      {i.description && (
-        <span className="text-zinc-400"> — {i.description}</span>
-      )}
-    </div>
-    <div className="flex items-center gap-3">
-      <span>{i.amount} kr</span>
-      <DeleteButton action={deleteIncome.bind(null, i.id)} />
-    </div>
-  </li>
-))}
+          {incomes.map((i) => (
+            <li
+              key={i.id}
+              className="flex justify-between items-center text-sm border-b border-zinc-100 dark:border-zinc-800 py-2"
+            >
+              <div>
+                <span>{i.category}</span>
+                <span className="text-zinc-400">
+                  {' '}
+                  · {i.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
+                {i.description && (
+                  <span className="text-zinc-400"> — {i.description}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <span>{i.amount} kr</span>
+                <Link
+                  href={`/dashboard/income/${i.id}/edit`}
+                  className="text-xs text-muted hover:text-foreground"
+                >
+                  Edit
+                </Link>
+                <DeleteButton action={deleteIncome.bind(null, i.id)} />
+              </div>
+            </li>
+          ))}
         </ul>
       )}
     </div>

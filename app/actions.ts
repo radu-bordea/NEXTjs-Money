@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { incomeSchema, expenseSchema, type IncomeFormValues, type ExpenseFormValues } from '@/lib/validations'
+import { redirect } from 'next/navigation'
 
 // create incopme and expense actions that validate the form values, create the record in the database, and revalidate the relevant paths
 export async function createIncome(values: IncomeFormValues) {
@@ -41,6 +42,49 @@ export async function createExpense(values: ExpenseFormValues) {
   revalidatePath('/dashboard/expenses')
   revalidatePath('/dashboard')
 }
+
+// update income action that validate the form values, update the record in the database, and revalidate the relevant paths
+export async function updateIncome(id: string, values: IncomeFormValues) {
+  const { userId } = await auth.protect();
+
+  const parsed = incomeSchema.safeParse(values);
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0].message);
+  }
+
+  const { amount, date, category, description } = parsed.data;
+
+  await prisma.income.updateMany({
+    where: { id, userId }, // scoped by userId — same trick as delete, no separate ownership check needed
+    data: { amount, date, category, description: description || null },
+  });
+
+  revalidatePath("/dashboard/income");
+  revalidatePath("/dashboard");
+  redirect("/dashboard/income");
+}
+
+// update expense action that validate the form values, update the record in the database, and revalidate the relevant paths
+export async function updateExpense(id: string, values: ExpenseFormValues) {
+  const { userId } = await auth.protect();
+
+  const parsed = expenseSchema.safeParse(values);
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0].message);
+  }
+
+  const { amount, date, category, description } = parsed.data;
+
+  await prisma.expense.updateMany({
+    where: { id, userId }, // scoped by userId — same trick as delete, no separate ownership check needed
+    data: { amount, date, category, description: description || null },
+  });
+
+  revalidatePath("/dashboard/expenses");
+  revalidatePath("/dashboard");
+  redirect("/dashboard/expenses");
+}
+
 
 // delete income and expense actions that delete the record in the database and revalidate the relevant paths
 export async function deleteIncome(id: string) {
