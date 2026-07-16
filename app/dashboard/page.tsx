@@ -1,6 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 import { IncomeExpensePie } from '@/components/income-expense-pie'
+import { ExpensesByCategoryBar } from '@/components/expenses-by-category-bar'
+import { IncomeExpenseTrend } from '@/components/income-expense-trend'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react'
 
@@ -30,6 +32,19 @@ function formatNOK(amount: number) {
   }).format(amount)
 }
 
+// always trails from "today", independent of which month you're browsing above —
+// this is a separate long-term view, not tied to month navigation
+function last6MonthsRange() {
+  const now = new Date()
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+  const start = new Date(now.getFullYear(), now.getMonth() - 5, 1)
+  const months: Date[] = []
+  for (let i = 0; i < 6; i++) {
+    months.push(new Date(start.getFullYear(), start.getMonth() + i, 1))
+  }
+  return { start, end, months }
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -48,7 +63,9 @@ export default async function DashboardPage({
   const isCurrentMonth =
     reference.getFullYear() === now.getFullYear() && reference.getMonth() === now.getMonth()
 
-  const [monthIncome, monthExpenses] = await Promise.all([
+  const trendRange = last6MonthsRange()
+
+  const [monthIncome, monthExpenses, trendIncome, trendExpenses] = await Promise.all([
     prisma.income.findMany({
       where: { userId, date: { gte: start, lt: end } },
       orderBy: { date: 'desc' },
@@ -56,6 +73,14 @@ export default async function DashboardPage({
     prisma.expense.findMany({
       where: { userId, date: { gte: start, lt: end } },
       orderBy: { date: 'desc' },
+    }),
+    prisma.income.findMany({
+      where: { userId, date: { gte: trendRange.start, lt: trendRange.end } },
+      select: { amount: true, date: true },
+    }),
+    prisma.expense.findMany({
+      where: { userId, date: { gte: trendRange.start, lt: trendRange.end } },
+      select: { amount: true, date: true },
     }),
   ])
 
@@ -65,6 +90,27 @@ export default async function DashboardPage({
 
   const unpaidExpenses = monthExpenses.filter((e) => e.status === 'UNPAID')
   const unpaidTotal = unpaidExpenses.reduce((sum, e) => sum + e.amount, 0)
+
+  // group this month's expenses by category, largest first
+  const categoryTotals = new Map<string, number>()
+  for (const e of monthExpenses) {
+    categoryTotals.set(e.category, (categoryTotals.get(e.category) || 0) + e.amount)
+  }
+  const categoryData = Array.from(categoryTotals.entries())
+    .map(([category, total]) => ({ category, total }))
+    .sort((a, b) => b.total - a.total)
+
+  // bucket trend data into the 6 month slots
+  const trendData = trendRange.months.map((monthDate) => {
+    const label = monthDate.toLocaleDateString('en-GB', { month: 'short' })
+    const income = trendIncome
+      .filter((r) => r.date.getFullYear() === monthDate.getFullYear() && r.date.getMonth() === monthDate.getMonth())
+      .reduce((sum, r) => sum + r.amount, 0)
+    const expense = trendExpenses
+      .filter((r) => r.date.getFullYear() === monthDate.getFullYear() && r.date.getMonth() === monthDate.getMonth())
+      .reduce((sum, r) => sum + r.amount, 0)
+    return { month: label, income, expense }
+  })
 
   const monthLabel = reference.toLocaleDateString('en-GB', {
     month: 'long',
@@ -135,7 +181,7 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      {/* unpaid bills — only shows up if there's something to act on */}
+      {/* unpaid bills */}
       {unpaidExpenses.length > 0 && (
         <div className="rounded-xl border border-expense/30 bg-expense/5 p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
@@ -166,8 +212,8 @@ export default async function DashboardPage({
         </div>
       )}
 
-      {/* chart + recent activity — stacked on mobile, side by side from md up */}
-      <div className="grid md:grid-cols-2 gap-4">
+      {/* pie + recent activity */}
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
         <div className="rounded-xl border border-border bg-surface p-4">
           <h2 className="text-sm font-medium text-muted mb-2">
             Income vs. Expenses
@@ -196,6 +242,22 @@ export default async function DashboardPage({
             </ul>
           )}
         </div>
+      </div>
+
+      {/* category breakdown */}
+      <div className="rounded-xl border border-border bg-surface p-4 mb-4">
+        <h2 className="text-sm font-medium text-muted mb-2">
+          Expenses by category — {monthLabel}
+        </h2>
+        <ExpensesByCategoryBar data={categoryData} />
+      </div>
+
+      {/* 6-month trend */}
+      <div className="rounded-xl border border-border bg-surface p-4">
+        <h2 className="text-sm font-medium text-muted mb-2">
+          Last 6 months
+        </h2>
+        <IncomeExpenseTrend data={trendData} />
       </div>
     </div>
   )
