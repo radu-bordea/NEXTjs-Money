@@ -3,17 +3,20 @@ import Link from "next/link";
 const features = [
   {
     title: "Log income & expenses",
-    description: "Add entries in seconds — amount, date, category, and an optional note.",
+    description:
+      "Add entries in seconds — amount, date, category, and an optional note.",
     accent: "income" as const,
   },
   {
     title: "See where money goes",
-    description: "Every entry is grouped by category, so patterns show up on their own.",
+    description:
+      "Every entry is grouped by category, so patterns show up on their own.",
     accent: "expense" as const,
   },
   {
     title: "Visualize it",
-    description: "Charts turn raw entries into a clear picture of income vs. spending over time.",
+    description:
+      "Charts turn raw entries into a clear picture of income vs. spending over time.",
     accent: "accent" as const,
   },
 ];
@@ -21,7 +24,7 @@ const features = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center">
+      <div className="mx-auto flex max-w-3xl flex-col items-center px-6 pt-8 sm:pt-24 text-center">
         <span className="mb-4 rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted">
           Personal finance, kept simple
         </span>
@@ -47,18 +50,20 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mx-auto grid max-w-3xl gap-4 px-6 pb-24 sm:grid-cols-3">
+      <div className="mx-auto grid max-w-3xl gap-4 px-6 pt-4 sm:pt-10 sm:pb-24 sm:grid-cols-3">
         {features.map((f) => (
           <div
             key={f.title}
-            className="rounded-xl border border-border bg-surface p-5 text-left"
+            className="rounded-xl border border-border bg-surface p-2 sm:p-5 text-left"
           >
-            <div
-              className="mb-3 h-2 w-2 rounded-full"
-              style={{ background: `var(--${f.accent})` }}
-            />
-            <h2 className="text-sm font-medium">{f.title}</h2>
-            <p className="mt-1.5 text-sm text-muted">{f.description}</p>
+            <div className="flex items-center gap-2">
+              <div
+                className="h-2 w-2 rounded-full shrink-0"
+                style={{ background: `var(--${f.accent})` }}
+              />
+              <h2 className="text-sm sm:text-base font-medium">{f.title}</h2>
+            </div>
+            <p className="mt-1.5 sm:mt-2 text-sm text-muted">{f.description}</p>
           </div>
         ))}
       </div>
