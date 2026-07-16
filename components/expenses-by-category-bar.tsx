@@ -54,7 +54,7 @@ export function ExpensesByCategoryBar({
             position="right"
             formatter={(value) => formatNOK(Number(value))}
             fill="var(--foreground)"
-            fontSize={12}
+            fontSize={10}
           />
         </Bar>
       </BarChart>

@@ -26,7 +26,7 @@ export function IncomeExpenseTrend({
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ left: -20, top: 20 }}>
+      <BarChart data={data} margin={{ left: -20, right: 20, top: 20 }}>
         <XAxis dataKey="month" tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -36,7 +36,7 @@ export function IncomeExpenseTrend({
             position="top"
             formatter={(value) => formatNOK(Number(value))}
             fill="var(--income)"
-            fontSize={11}
+            fontSize={10}
           />
         </Bar>
         <Bar dataKey="expense" name="Expense" fill="var(--expense)" radius={[4, 4, 0, 0]}>
@@ -45,7 +45,7 @@ export function IncomeExpenseTrend({
             position="top"
             formatter={(value) => formatNOK(Number(value))}
             fill="var(--expense)"
-            fontSize={11}
+            fontSize={10}
           />
         </Bar>
       </BarChart>
