@@ -57,7 +57,7 @@ const {
             step="0.01"
             placeholder="0.00"
             {...register('amount')}
-            className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm"
+            className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm outline-none focus:border-gray-600 focus:ring-1 focus:ring-accent/40"
           />
           {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}
         </div>
@@ -71,7 +71,7 @@ const {
             type="date"
             {...register('date', { valueAsDate: true })}
             defaultValue={(expense?.date ?? new Date()).toISOString().slice(0, 10)}
-            className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm"
+            className="rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm outline-none focus:border-gray-600 focus:ring-1 focus:ring-accent/40"
           />
           {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date.message}</p>}
         </div>
@@ -85,7 +85,7 @@ const {
           id="category"
           placeholder="e.g. Rent, Groceries"
           {...register('category')}
-          className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm"
+          className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm outline-none focus:border-gray-600 focus:ring-1 focus:ring-accent/40"
         />
         {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category.message}</p>}
       </div>
@@ -98,7 +98,7 @@ const {
           id="description"
           placeholder="e.g. Rema 1000"
           {...register('description')}
-          className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm"
+          className="w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm outline-none focus:border-gray-600 focus:ring-1 focus:ring-accent/40"
         />
       </div>
 

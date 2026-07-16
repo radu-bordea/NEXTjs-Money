@@ -1,6 +1,13 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Legend, ResponsiveContainer, LabelList } from 'recharts'
+
+function formatNOK(value: number) {
+  return new Intl.NumberFormat('nb-NO', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value)
+}
 
 export function IncomeExpenseTrend({
   data,
@@ -19,22 +26,28 @@ export function IncomeExpenseTrend({
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ left: -20 }}>
+      <BarChart data={data} margin={{ left: -20, top: 20 }}>
         <XAxis dataKey="month" tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
-        <Tooltip
-        cursor={{ fill: 'var(--surface-2)' }}
-          formatter={(value) => `${Number(value).toLocaleString('nb-NO')} kr`}
-          contentStyle={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 8,
-            fontSize: 13,
-          }}
-        />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Bar dataKey="income" name="Income" fill="var(--income)" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="expense" name="Expense" fill="var(--expense)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="income" name="Income" fill="var(--income)" radius={[4, 4, 0, 0]}>
+          <LabelList
+            dataKey="income"
+            position="top"
+            formatter={(value) => formatNOK(Number(value))}
+            fill="var(--income)"
+            fontSize={11}
+          />
+        </Bar>
+        <Bar dataKey="expense" name="Expense" fill="var(--expense)" radius={[4, 4, 0, 0]}>
+          <LabelList
+            dataKey="expense"
+            position="top"
+            formatter={(value) => formatNOK(Number(value))}
+            fill="var(--expense)"
+            fontSize={11}
+          />
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   )
