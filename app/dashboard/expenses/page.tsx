@@ -9,9 +9,17 @@ import { StatusBadge } from "@/components/status-badge";
 export default async function ExpensesPage() {
   const { userId } = await auth.protect();
 
-  const expenses = await prisma.expense.findMany({
+  const expensesRaw = await prisma.expense.findMany({
     where: { userId },
-    orderBy: { date: "desc" },
+  });
+
+  // unpaid first (soonest due date first within that group),
+  // then paid (soonest due date first within that group too)
+  const expenses = [...expensesRaw].sort((a, b) => {
+    if (a.status !== b.status) {
+      return a.status === "UNPAID" ? -1 : 1;
+    }
+    return a.date.getTime() - b.date.getTime();
   });
 
   return (

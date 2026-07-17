@@ -48,18 +48,33 @@ export function IncomeExpensePie({
         </PieChart>
       </ResponsiveContainer>
 
-      <div className="flex justify-center gap-6 mt-2">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--income)' }} />
-          <span className="text-muted">Income</span>
-          <span className="font-medium text-income">{formatNOK(totalIncome)} kr</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--expense)' }} />
-          <span className="text-muted">Expenses</span>
-          <span className="font-medium text-expense">{formatNOK(totalExpenses)} kr</span>
-        </div>
-      </div>
+<div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-3">
+  <div className="flex items-center gap-2">
+    <span
+      className="w-2.5 h-2.5 rounded-full shrink-0"
+      style={{ background: "var(--income)" }}
+    />
+    <div className="flex flex-col leading-tight">
+      <span className="text-xs text-muted">Income</span>
+      <span className="text-sm font-medium text-income">
+        {formatNOK(totalIncome)} kr
+      </span>
+    </div>
+  </div>
+
+  <div className="flex items-center gap-2">
+    <span
+      className="w-2.5 h-2.5 rounded-full shrink-0"
+      style={{ background: "var(--expense)" }}
+    />
+    <div className="flex flex-col leading-tight">
+      <span className="text-xs text-muted">Expenses</span>
+      <span className="text-sm font-medium text-expense">
+        {formatNOK(totalExpenses)} kr
+      </span>
+    </div>
+  </div>
+</div>
     </div>
   )
 }

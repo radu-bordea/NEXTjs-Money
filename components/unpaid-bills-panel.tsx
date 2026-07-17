@@ -8,6 +8,7 @@ type UnpaidExpense = {
   id: string
   category: string
   amount: number
+  date: Date
 }
 
 function formatNOK(amount: number) {
@@ -26,6 +27,8 @@ export function UnpaidBillsPanel({
 }) {
   const [expanded, setExpanded] = useState(false)
 
+  const sorted = [...expenses].sort((a, b) => a.date.getTime() - b.date.getTime())
+
   return (
     <div className="rounded-xl border border-expense/30 bg-expense/5 mb-6 overflow-hidden">
       <button
@@ -39,7 +42,7 @@ export function UnpaidBillsPanel({
           </h2>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-expense">
+          <span className="text-sm font-semibold text-expense/70">
             {formatNOK(total)} kr
           </span>
           <ChevronDown
@@ -52,10 +55,13 @@ export function UnpaidBillsPanel({
       {expanded && (
         <div className="px-4 pb-4">
           <ul className="space-y-1">
-            {expenses.map((e) => (
+            {sorted.map((e) => (
               <li key={e.id} className="flex justify-between text-sm py-1">
                 <span>{e.category}</span>
-                <span className="text-muted">{formatNOK(e.amount)} kr</span>
+                <span className="text-xs text-muted">
+                  {e.date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                </span>
+                <span className="text-expense/50">{formatNOK(e.amount)} kr</span>
               </li>
             ))}
           </ul>

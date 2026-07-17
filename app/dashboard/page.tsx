@@ -144,7 +144,7 @@ export default async function DashboardPage({
     ...monthExpenses.map((r) => ({ ...r, kind: "expense" as const })),
   ]
     .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .slice(0, 8);
+    .slice(0, 4);
 
   return (
     <div className="max-w-4xl mx-auto p-6 sm:p-8">
@@ -224,35 +224,51 @@ export default async function DashboardPage({
           />
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <h2 className="text-sm font-medium text-muted mb-3">
-            Recent activity
-          </h2>
-          {recent.length === 0 ? (
-            <p className="text-sm text-muted">
-              Nothing logged for {monthLabel}.
-            </p>
-          ) : (
-            <ul className="space-y-1">
-              {recent.map((r) => (
-                <li
-                  key={`${r.kind}-${r.id}`}
-                  className="flex justify-between text-sm border-b border-border py-2 last:border-0"
-                >
-                  <span className="truncate">{r.category}</span>
-                  <span
-                    className={
-                      r.kind === "income" ? "text-income" : "text-expense"
-                    }
-                  >
-                    {r.kind === "income" ? "+" : "-"}
-                    {formatNOK(r.amount)} kr
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+<div className="rounded-xl border border-border bg-surface p-4">
+  <h2 className="text-sm font-medium text-muted mb-3">
+    Recent activity
+  </h2>
+  {recent.length === 0 ? (
+    <p className="text-sm text-muted">
+      Nothing logged for {monthLabel}.
+    </p>
+  ) : (
+    <>
+      <ul className="space-y-1">
+        {recent.map((r) => (
+<li
+  key={`${r.kind}-${r.id}`}
+  className="flex justify-between items-center text-sm border-b border-border py-2 last:border-0"
+>
+  <div className="min-w-0">
+    <span className="truncate">{r.category}</span>
+    <div className="text-xs text-muted">
+      {r.date.toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+    </div>
+  </div>
+  <span
+    className={r.kind === "income" ? "text-income" : "text-expense"}
+  >
+    {r.kind === "income" ? "+" : "-"}
+    {formatNOK(r.amount)} kr
+  </span>
+</li>
+        ))}
+      </ul>
+      <p className="text-xs text-muted mt-2">
+        See the full picture in{" "}
+        <Link href="/dashboard/income" className="text-accent hover:underline">
+          Income
+        </Link>{" "}
+        or{" "}
+        <Link href="/dashboard/expenses" className="text-accent hover:underline">
+          Expenses
+        </Link>
+        .
+      </p>
+    </>
+  )}
+</div>
       </div>
 
       {/* category breakdown */}
