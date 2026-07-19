@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { incomeSchema, expenseSchema, type IncomeFormValues, type ExpenseFormValues } from '@/lib/validations'
 import { redirect } from 'next/navigation'
+import { SUPPORTED_CURRENCIES, type CurrencyCode } from '@/lib/currency'
 
 // create incopme and expense actions that validate the form values, create the record in the database, and revalidate the relevant paths
 export async function createIncome(values: IncomeFormValues) {
@@ -119,4 +120,49 @@ export async function toggleExpenseStatus(id:string, currentStatus: 'PAID' | 'UN
 
   revalidatePath('/dashboard/expenses')
   revalidatePath('/dashboard')
+}
+
+
+// ---------- USER SETTINGS / CURRENCY ----------
+
+// Reads the signed-in user's chosen currency.
+// If they haven't picked one yet (no row exists), default to NOK
+// rather than throwing — most users won't have set this yet,
+// and this keeps every page working even before they've made a choice.
+export async function getUserCurrency(): Promise<CurrencyCode> {
+  const { userId } = await auth.protect()
+
+  const settings = await prisma.userSettings.findUnique({
+    where: { userId },
+  })
+
+  return (settings?.currency as CurrencyCode) ?? 'NOK'
+}
+
+// Creates the signed-in user's currency choice — once only.
+// If a row already exists, this refuses to change it: currency is
+// locked at signup to avoid ever mixing amounts from two different
+// currencies in the same account's totals/charts.
+export async function setUserCurrency(currency: CurrencyCode) {
+  const { userId } = await auth.protect()
+
+  if (!SUPPORTED_CURRENCIES.includes(currency)) {
+    throw new Error('Unsupported currency')
+  }
+
+  const existing = await prisma.userSettings.findUnique({
+    where: { userId },
+  })
+
+  if (existing) {
+    throw new Error('Currency is already set and cannot be changed')
+  }
+
+  await prisma.userSettings.create({
+    data: { userId, currency },
+  })
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/income')
+  revalidatePath('/dashboard/expenses')
 }

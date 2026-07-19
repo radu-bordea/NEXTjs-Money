@@ -251,7 +251,7 @@ export default async function DashboardPage({
                     </div>
                     <span
                       className={
-                        r.kind === "income" ? "text-income" : "text-expense/70"
+                        r.kind === "income" ? "text-income" : "text-expense/70t"
                       }
                     >
                       {r.kind === "income" ? "+" : "-"}

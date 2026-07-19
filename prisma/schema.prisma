@@ -8,6 +8,12 @@ datasource db {
   provider = "postgresql"
 }
 
+model UserSettings {
+  userId String @id // clerk id
+  currency String @default("NOK")
+  createdAt DateTime @default(now())
+}
+
 model Income {
   id          String   @id @default(cuid())
   userId      String // clerk id
