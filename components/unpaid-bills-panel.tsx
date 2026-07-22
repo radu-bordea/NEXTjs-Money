@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle, ChevronDown } from 'lucide-react'
+import { formatCurrency, type CurrencyCode } from '@/lib/currency'
 
 type UnpaidExpense = {
   id: string
@@ -11,19 +12,14 @@ type UnpaidExpense = {
   date: Date
 }
 
-function formatNOK(amount: number) {
-  return new Intl.NumberFormat('nb-NO', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
-
 export function UnpaidBillsPanel({
   expenses,
   total,
+  currency,
 }: {
   expenses: UnpaidExpense[]
   total: number
+  currency: CurrencyCode
 }) {
   const [expanded, setExpanded] = useState(false)
 
@@ -43,7 +39,7 @@ export function UnpaidBillsPanel({
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-expense/70">
-            {formatNOK(total)} kr
+            {formatCurrency(total, currency)}
           </span>
           <ChevronDown
             size={16}
@@ -61,7 +57,7 @@ export function UnpaidBillsPanel({
                 <span className="text-xs text-muted">
                   {e.date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                 </span>
-                <span className="text-expense/50">{formatNOK(e.amount)} kr</span>
+                <span className="text-expense/50">{formatCurrency(e.amount, currency)}</span>
               </li>
             ))}
           </ul>

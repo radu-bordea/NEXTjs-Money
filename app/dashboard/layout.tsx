@@ -1,6 +1,9 @@
 import Link from "next/link"
+import { auth } from "@clerk/nextjs/server"
 import { UserButton } from "@clerk/nextjs"
+import prisma from "@/lib/prisma"
 import { LayoutGrid, ArrowUpCircle, ArrowDownCircle } from "lucide-react"
+import { CurrencyPicker } from "@/components/currency-picker"
 
 const links = [
   { href: "/dashboard", label: "Overview", icon: LayoutGrid },
@@ -8,11 +11,28 @@ const links = [
   { href: "/dashboard/expenses", label: "Expenses", icon: ArrowDownCircle },
 ]
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { userId } = await auth.protect()
+
+  const settings = await prisma.userSettings.findUnique({
+    where: { userId },
+  })
+
+  // no currency chosen yet — show the picker instead of the dashboard,
+  // and skip rendering the nav entirely so there's nothing to distract
+  // from making this one required choice first
+  if (!settings) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <CurrencyPicker />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <nav className="flex items-center justify-between border-b border-border bg-surface px-3 sm:px-6 h-14 gap-2">

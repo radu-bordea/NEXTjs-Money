@@ -6,6 +6,8 @@ import { IncomeExpenseTrend } from "@/components/income-expense-trend";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { UnpaidBillsPanel } from "@/components/unpaid-bills-panel";
+import { getUserCurrency } from "@/app/actions";
+import { formatCurrency } from "@/lib/currency";
 
 function parseMonthParam(month?: string) {
   if (month) {
@@ -24,13 +26,6 @@ function monthRangeFor(reference: Date) {
 
 function toMonthParam(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function formatNOK(amount: number) {
-  return new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
 }
 
 // always trails from "today", independent of which month you're browsing above —
@@ -53,6 +48,11 @@ export default async function DashboardPage({
 }) {
   const { userId } = await auth.protect();
   const { month } = await searchParams;
+
+  // the signed-in user's chosen currency (e.g. "NOK", "RON") —
+  // defaults to "NOK" if they somehow don't have a UserSettings row,
+  // though the dashboard layout should already prevent that case
+  const currency = await getUserCurrency();
 
   const reference = parseMonthParam(month);
   const { start, end } = monthRangeFor(reference);
@@ -187,13 +187,13 @@ export default async function DashboardPage({
         <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs text-muted mb-1">Income</div>
           <div className="text-lg font-semibold text-income">
-            +{formatNOK(totalIncome)} kr
+            +{formatCurrency(totalIncome, currency)}
           </div>
         </div>
         <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs text-muted mb-1">Expenses</div>
           <div className="text-lg font-semibold text-expense">
-            -{formatNOK(totalExpenses)} kr
+            -{formatCurrency(totalExpenses, currency)}
           </div>
         </div>
         <div className="rounded-xl border border-border bg-surface p-4">
@@ -202,14 +202,14 @@ export default async function DashboardPage({
             className={`text-lg font-semibold ${net >= 0 ? "text-income" : "text-expense"}`}
           >
             {net >= 0 ? "+" : ""}
-            {formatNOK(net)} kr
+            {formatCurrency(net, currency)}
           </div>
         </div>
       </div>
 
       {/* unpaid bills */}
       {unpaidExpenses.length > 0 && (
-        <UnpaidBillsPanel expenses={unpaidExpenses} total={unpaidTotal} />
+        <UnpaidBillsPanel expenses={unpaidExpenses} total={unpaidTotal} currency={currency} />
       )}
 
       {/* pie + recent activity */}
@@ -255,7 +255,7 @@ export default async function DashboardPage({
                       }
                     >
                       {r.kind === "income" ? "+" : "-"}
-                      {formatNOK(r.amount)} kr
+                      {formatCurrency(r.amount, currency)}
                     </span>
                   </li>
                 ))}

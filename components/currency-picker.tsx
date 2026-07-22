@@ -22,7 +22,7 @@ export function CurrencyPicker() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-8 text-center">
+    <div className="max-w-md  p-8 text-center ">
       <h1 className="text-xl font-semibold mb-2">Choose your currency</h1>
       <p className="text-sm text-muted mb-6">
         This can&apos;t be changed later — all your amounts and totals will
