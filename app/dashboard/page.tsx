@@ -221,6 +221,7 @@ export default async function DashboardPage({
           <IncomeExpensePie
             totalIncome={totalIncome}
             totalExpenses={totalExpenses}
+            currency={currency}
           />
         </div>
 
@@ -287,13 +288,13 @@ export default async function DashboardPage({
         <h2 className="text-sm font-medium text-muted mb-2">
           Expenses by category — {monthLabel}
         </h2>
-        <ExpensesByCategoryBar data={categoryData} />
+        <ExpensesByCategoryBar data={categoryData} currency={currency} />
       </div>
 
       {/* 6-month trend */}
       <div className="rounded-xl border border-border bg-surface p-4">
         <h2 className="text-sm font-medium text-muted mb-2">Last 6 months</h2>
-        <IncomeExpenseTrend data={trendData} />
+        <IncomeExpenseTrend data={trendData} currency={currency} />
       </div>
     </div>
   );

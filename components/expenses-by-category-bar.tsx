@@ -1,6 +1,7 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Rectangle, LabelList } from 'recharts'
+import { formatCurrency, type CurrencyCode } from '@/lib/currency'
 
 const PALETTE = ['#FB7185', '#FBBF24', '#38BDF8', '#A78BFA', '#F472B6', '#34D399', '#818CF8', '#4ADE80']
 
@@ -10,17 +11,12 @@ function colorForCategory(name: string) {
   return PALETTE[hash % PALETTE.length]
 }
 
-function formatNOK(amount: number) {
-  return `${new Intl.NumberFormat('nb-NO', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)} kr`
-}
-
 export function ExpensesByCategoryBar({
   data,
+  currency,
 }: {
   data: { category: string; total: number }[]
+  currency: CurrencyCode
 }) {
   if (data.length === 0) {
     return (
@@ -52,7 +48,7 @@ export function ExpensesByCategoryBar({
           <LabelList
             dataKey="total"
             position="right"
-            formatter={(value) => formatNOK(Number(value))}
+            formatter={(value) => formatCurrency(Number(value), currency)}
             fill="var(--foreground)"
             fontSize={10}
           />

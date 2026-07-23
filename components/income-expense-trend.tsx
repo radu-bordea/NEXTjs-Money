@@ -1,18 +1,14 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, Legend, ResponsiveContainer, LabelList } from 'recharts'
-
-function formatNOK(value: number) {
-  return new Intl.NumberFormat('nb-NO', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value)
-}
+import { formatCurrency, type CurrencyCode } from '@/lib/currency'
 
 export function IncomeExpenseTrend({
   data,
+  currency,
 }: {
   data: { month: string; income: number; expense: number }[]
+  currency: CurrencyCode
 }) {
   const hasData = data.some((d) => d.income > 0 || d.expense > 0)
 
@@ -34,7 +30,7 @@ export function IncomeExpenseTrend({
           <LabelList
             dataKey="income"
             position="top"
-            formatter={(value) => formatNOK(Number(value))}
+            formatter={(value) => formatCurrency(Number(value), currency)}
             fill="var(--income)"
             fontSize={7}
           />
@@ -43,7 +39,7 @@ export function IncomeExpenseTrend({
           <LabelList
             dataKey="expense"
             position="top"
-            formatter={(value) => formatNOK(Number(value))}
+            formatter={(value) => formatCurrency(Number(value), currency)}
             fill="var(--expense)"
             fontSize={7}
           />

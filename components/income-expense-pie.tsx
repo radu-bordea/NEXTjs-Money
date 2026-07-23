@@ -1,20 +1,16 @@
 'use client'
 
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts'
-
-function formatNOK(amount: number) {
-  return new Intl.NumberFormat('nb-NO', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
+import { formatCurrency, type CurrencyCode } from '@/lib/currency'
 
 export function IncomeExpensePie({
   totalIncome,
   totalExpenses,
+  currency,
 }: {
   totalIncome: number
   totalExpenses: number
+  currency: CurrencyCode
 }) {
   const data = [
     { name: 'Income', value: totalIncome, color: 'var(--income)' },
@@ -48,33 +44,33 @@ export function IncomeExpensePie({
         </PieChart>
       </ResponsiveContainer>
 
-<div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-3">
-  <div className="flex items-center gap-2">
-    <span
-      className="w-2.5 h-2.5 rounded-full shrink-0"
-      style={{ background: "var(--income)" }}
-    />
-    <div className="flex flex-col leading-tight">
-      <span className="text-xs text-muted">Income</span>
-      <span className="text-sm font-medium text-income">
-        {formatNOK(totalIncome)} kr
-      </span>
-    </div>
-  </div>
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-3">
+        <div className="flex items-center gap-2">
+          <span
+            className="w-2.5 h-2.5 rounded-full shrink-0"
+            style={{ background: "var(--income)" }}
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-xs text-muted">Income</span>
+            <span className="text-sm font-medium text-income">
+              {formatCurrency(totalIncome, currency)}
+            </span>
+          </div>
+        </div>
 
-  <div className="flex items-center gap-2">
-    <span
-      className="w-2.5 h-2.5 rounded-full shrink-0"
-      style={{ background: "var(--expense)" }}
-    />
-    <div className="flex flex-col leading-tight">
-      <span className="text-xs text-muted">Expenses</span>
-      <span className="text-sm font-medium text-expense">
-        {formatNOK(totalExpenses)} kr
-      </span>
-    </div>
-  </div>
-</div>
+        <div className="flex items-center gap-2">
+          <span
+            className="w-2.5 h-2.5 rounded-full shrink-0"
+            style={{ background: "var(--expense)" }}
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-xs text-muted">Expenses</span>
+            <span className="text-sm font-medium text-expense">
+              {formatCurrency(totalExpenses, currency)}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
