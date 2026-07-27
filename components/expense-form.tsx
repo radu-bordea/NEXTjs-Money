@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTransition } from 'react'
 import { expenseSchema, type ExpenseFormValues, type ExpenseFormInput } from '@/lib/validations'
 import { createExpense, updateExpense } from '@/app/actions'
+import type { CurrencyCode } from '@/lib/currency'
 
 type ExistingExpense = {
   id: string
@@ -14,24 +15,30 @@ type ExistingExpense = {
   description: string | null
 }
 
-export function ExpenseForm({ expense }: { expense?: ExistingExpense }) {
+export function ExpenseForm({
+  expense,
+  currency,
+}: {
+  expense?: ExistingExpense
+  currency: CurrencyCode
+}) {
   const [isPending, startTransition] = useTransition()
   const isEditing = !!expense
 
-const {
-  register,
-  handleSubmit,
-  reset,
-  formState: { errors },
-} = useForm<ExpenseFormInput, unknown, ExpenseFormValues>({
-  resolver: zodResolver(expenseSchema),
-  defaultValues: {
-    amount: expense?.amount,
-    date: expense?.date ?? new Date(),
-    category: expense?.category ?? '',
-    description: expense?.description ?? '',
-  },
-})
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ExpenseFormInput, unknown, ExpenseFormValues>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      amount: expense?.amount,
+      date: expense?.date ?? new Date(),
+      category: expense?.category ?? '',
+      description: expense?.description ?? '',
+    },
+  })
 
   function onSubmit(values: ExpenseFormValues) {
     startTransition(async () => {
@@ -49,7 +56,7 @@ const {
       <div className="flex gap-3">
         <div className="flex-1">
           <label htmlFor="amount" className="block text-xs text-muted mb-1">
-            Amount (NOK)
+            Amount ({currency})
           </label>
           <input
             id="amount"

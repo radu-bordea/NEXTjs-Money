@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { IncomeForm } from '@/components/income-form'
+import { getUserCurrency } from '@/app/actions'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
@@ -12,6 +13,7 @@ export default async function EditIncomePage({
 }) {
   const { id } = await params
   const { userId } = await auth.protect()
+  const currency = await getUserCurrency()
 
   const income = await prisma.income.findFirst({
     where: { id, userId },
@@ -29,7 +31,7 @@ export default async function EditIncomePage({
         Back to Income
       </Link>
       <h1 className="text-2xl font-semibold mb-6">Edit income</h1>
-      <IncomeForm income={income} />
+      <IncomeForm income={income} currency={currency} />
     </div>
   )
 }

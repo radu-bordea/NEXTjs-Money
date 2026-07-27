@@ -182,35 +182,27 @@ export default async function DashboardPage({
           : "Showing a past month — not the current one."}
       </p>
 
-      {/* summary cards */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <div className="text-xs text-muted mb-1">Income</div>
-          <div className="text-lg font-semibold text-income">
-            +{formatCurrency(totalIncome, currency)}
-          </div>
-        </div>
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <div className="text-xs text-muted mb-1">Expenses</div>
-          <div className="text-lg font-semibold text-expense">
-            -{formatCurrency(totalExpenses, currency)}
-          </div>
-        </div>
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <div className="text-xs text-muted mb-1">Net</div>
-          <div
-            className={`text-lg font-semibold ${net >= 0 ? "text-income" : "text-expense"}`}
-          >
-            {net >= 0 ? "+" : ""}
-            {formatCurrency(net, currency)}
-          </div>
+            {/* unpaid bills */}
+      {unpaidExpenses.length > 0 && (
+        <UnpaidBillsPanel
+          expenses={unpaidExpenses}
+          total={unpaidTotal}
+          currency={currency}
+        />
+      )}
+
+      {/* net summary */}
+      <div className="rounded-xl border border-border bg-surface p-4 mb-6">
+        <div className="text-xs text-muted mb-1">Net this month</div>
+        <div
+          className={`text-2xl font-semibold ${net >= 0 ? "text-income" : "text-expense"}`}
+        >
+          {net >= 0 ? "+" : ""}
+          {formatCurrency(net, currency)}
         </div>
       </div>
 
-      {/* unpaid bills */}
-      {unpaidExpenses.length > 0 && (
-        <UnpaidBillsPanel expenses={unpaidExpenses} total={unpaidTotal} currency={currency} />
-      )}
+
 
       {/* pie + recent activity */}
       <div className="grid md:grid-cols-2 gap-4 mb-4">

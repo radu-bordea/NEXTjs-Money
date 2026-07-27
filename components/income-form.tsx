@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTransition } from 'react'
 import { incomeSchema, type IncomeFormValues, type IncomeFormInput } from '@/lib/validations'
 import { createIncome, updateIncome } from '@/app/actions'
+import type { CurrencyCode } from '@/lib/currency'
 
 type ExistingIncome = {
   id: string
@@ -14,7 +15,13 @@ type ExistingIncome = {
   description: string | null
 }
 
-export function IncomeForm({ income }: { income?: ExistingIncome }) {
+export function IncomeForm({
+  income,
+  currency,
+}: {
+  income?: ExistingIncome
+  currency: CurrencyCode
+}) {
   const [isPending, startTransition] = useTransition()
   const isEditing = !!income
 
@@ -49,7 +56,7 @@ export function IncomeForm({ income }: { income?: ExistingIncome }) {
       <div className="flex gap-3">
         <div className="flex-1">
           <label htmlFor="amount" className="block text-xs text-muted mb-1">
-            Amount (NOK)
+            Amount ({currency})
           </label>
           <input
             id="amount"

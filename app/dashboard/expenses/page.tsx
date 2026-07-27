@@ -2,12 +2,14 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { ExpenseForm } from "@/components/expense-form";
-import { deleteExpense } from "@/app/actions";
+import { deleteExpense, getUserCurrency } from "@/app/actions";
 import { DeleteButton } from "@/components/delete-button";
 import { StatusBadge } from "@/components/status-badge";
+import { formatCurrency } from "@/lib/currency";
 
 export default async function ExpensesPage() {
   const { userId } = await auth.protect();
+  const currency = await getUserCurrency();
 
   const expensesRaw = await prisma.expense.findMany({
     where: { userId },
@@ -26,7 +28,7 @@ export default async function ExpensesPage() {
     <div className="max-w-2xl mx-auto p-8">
       <h1 className="text-2xl font-semibold mb-6">Expenses</h1>
 
-      <ExpenseForm />
+      <ExpenseForm currency={currency} />
 
       {expenses.length === 0 ? (
         <p className="text-sm text-zinc-400">No expenses logged yet.</p>
@@ -53,7 +55,9 @@ export default async function ExpensesPage() {
               </div>
 
               <div className="flex items-center justify-between sm:justify-end gap-3">
-                <span className="font-mono text-sm">{e.amount} kr</span>
+                <span className="font-mono text-sm">
+                  {formatCurrency(e.amount, currency)}
+                </span>
                 <div className="flex items-center gap-3 shrink-0">
                   <Link
                     href={`/dashboard/expenses/${e.id}/edit`}
