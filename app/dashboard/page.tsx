@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { UnpaidBillsPanel } from "@/components/unpaid-bills-panel";
 import { getUserCurrency } from "@/app/actions";
 import { formatCurrency } from "@/lib/currency";
+import { NetTrendLine } from "@/components/net-trend-line";
 
 function parseMonthParam(month?: string) {
   if (month) {
@@ -131,7 +132,7 @@ export default async function DashboardPage({
           r.date.getMonth() === monthDate.getMonth(),
       )
       .reduce((sum, r) => sum + r.amount, 0);
-    return { month: label, income, expense };
+    return { month: label, income, expense, net: income - expense };
   });
 
   const monthLabel = reference.toLocaleDateString("en-GB", {
@@ -182,7 +183,7 @@ export default async function DashboardPage({
           : "Showing a past month — not the current one."}
       </p>
 
-            {/* unpaid bills */}
+      {/* unpaid bills */}
       {unpaidExpenses.length > 0 && (
         <UnpaidBillsPanel
           expenses={unpaidExpenses}
@@ -201,8 +202,6 @@ export default async function DashboardPage({
           {formatCurrency(net, currency)}
         </div>
       </div>
-
-
 
       {/* pie + recent activity */}
       <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -287,6 +286,14 @@ export default async function DashboardPage({
       <div className="rounded-xl border border-border bg-surface p-4">
         <h2 className="text-sm font-medium text-muted mb-2">Last 6 months</h2>
         <IncomeExpenseTrend data={trendData} currency={currency} />
+      </div>
+
+      {/* net trend over time */}
+      <div className="rounded-xl border border-border bg-surface p-4 mt-4">
+        <h2 className="text-sm font-medium text-muted mb-2">
+          Net trend — last 6 months
+        </h2>
+        <NetTrendLine data={trendData} currency={currency} />
       </div>
     </div>
   );
