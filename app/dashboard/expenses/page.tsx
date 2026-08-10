@@ -15,14 +15,17 @@ export default async function ExpensesPage() {
     where: { userId },
   });
 
-  // unpaid first (soonest due date first within that group),
-  // then paid (soonest due date first within that group too)
-  const expenses = [...expensesRaw].sort((a, b) => {
-    if (a.status !== b.status) {
-      return a.status === "UNPAID" ? -1 : 1;
-    }
-    return a.date.getTime() - b.date.getTime();
-  });
+// unpaid first (soonest due date first within that group),
+// then paid (most recently paid first within that group)
+const expenses = [...expensesRaw].sort((a, b) => {
+  if (a.status !== b.status) {
+    return a.status === "UNPAID" ? -1 : 1;
+  }
+  if (a.status === "UNPAID") {
+    return a.date.getTime() - b.date.getTime(); // soonest due date first
+  }
+  return b.date.getTime() - a.date.getTime(); // most recent first
+});
 
   return (
     <div className="max-w-2xl mx-auto p-8">
