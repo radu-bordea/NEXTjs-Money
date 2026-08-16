@@ -162,21 +162,22 @@ export default async function DashboardPage({
           <span className="text-sm text-muted w-32 text-center">
             {monthLabel}
           </span>
-          {isCurrentMonth ? (
-            <span className="rounded-md p-1.5 text-muted/30">
-              <ChevronRight size={18} />
-            </span>
-          ) : (
-            <Link
-              href={`/dashboard?month=${toMonthParam(nextMonth)}`}
-              className="rounded-md p-1.5 text-muted hover:text-foreground hover:bg-surface-2"
-              aria-label="Next month"
-            >
-              <ChevronRight size={18} />
-            </Link>
-          )}
+          <Link
+            href={`/dashboard?month=${toMonthParam(nextMonth)}`}
+            className="rounded-md p-1.5 text-muted hover:text-foreground hover:bg-surface-2"
+            aria-label="Next month"
+          >
+            <ChevronRight size={18} />
+          </Link>
         </div>
       </div>
+      <p className="text-xs text-muted mb-6">
+        {isCurrentMonth
+          ? "Showing the current month."
+          : reference > now
+            ? "Showing a future month — entries logged in advance."
+            : "Showing a past month — not the current one."}
+      </p>
       <p className="text-xs text-muted mb-6">
         {isCurrentMonth
           ? "Showing the current month."
