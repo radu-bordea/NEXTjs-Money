@@ -7,6 +7,9 @@ import { incomeSchema, expenseSchema, type IncomeFormValues, type ExpenseFormVal
 import { redirect } from 'next/navigation'
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from '@/lib/currency'
 
+import { budgetSchema, type BudgetFormValues } from '@/lib/validations'
+
+
 // create incopme and expense actions that validate the form values, create the record in the database, and revalidate the relevant paths
 export async function createIncome(values: IncomeFormValues) {
   const { userId } = await auth.protect()
@@ -165,4 +168,31 @@ export async function setUserCurrency(currency: CurrencyCode) {
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/income')
   revalidatePath('/dashboard/expenses')
+}
+
+// ---------- BUDGETS ----------
+
+export async function setBudget(values: BudgetFormValues) {
+  const { userId } = await auth.protect()
+
+  const parsed = budgetSchema.safeParse(values)
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0].message)
+  }
+
+  const { category, limit } = parsed.data
+
+  await prisma.budget.upsert({
+    where: { userId_category: { userId, category } },
+    update: { limit },
+    create: { userId, category, limit },
+  })
+
+  revalidatePath('/dashboard')
+}
+
+export async function deleteBudget(id: string) {
+  const { userId } = await auth.protect()
+  await prisma.budget.deleteMany({ where: { id, userId } })
+  revalidatePath('/dashboard')
 }

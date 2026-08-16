@@ -5,36 +5,71 @@ import { ExpenseForm } from "@/components/expense-form";
 import { deleteExpense, getUserCurrency } from "@/app/actions";
 import { DeleteButton } from "@/components/delete-button";
 import { StatusBadge } from "@/components/status-badge";
+import { MonthFilter } from "@/components/month-filter";
 import { formatCurrency } from "@/lib/currency";
 
-export default async function ExpensesPage() {
+function currentMonthValue() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function monthRangeFor(value: string) {
+  const [year, month] = value.split("-").map(Number);
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 1);
+  return { start, end };
+}
+
+export default async function ExpensesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: string }>;
+}) {
   const { userId } = await auth.protect();
   const currency = await getUserCurrency();
+  const { filter } = await searchParams;
+
+  // defaults to the current month if no filter is present in the URL yet
+  const activeFilter = filter ?? currentMonthValue();
+  const isAll = activeFilter === "all";
 
   const expensesRaw = await prisma.expense.findMany({
-    where: { userId },
+    where: isAll
+      ? { userId }
+      : {
+          userId,
+          date: {
+            gte: monthRangeFor(activeFilter).start,
+            lt: monthRangeFor(activeFilter).end,
+          },
+        },
   });
 
-// unpaid first (soonest due date first within that group),
-// then paid (most recently paid first within that group)
-const expenses = [...expensesRaw].sort((a, b) => {
-  if (a.status !== b.status) {
-    return a.status === "UNPAID" ? -1 : 1;
-  }
-  if (a.status === "UNPAID") {
-    return a.date.getTime() - b.date.getTime(); // soonest due date first
-  }
-  return b.date.getTime() - a.date.getTime(); // most recent first
-});
+  // unpaid first (soonest due date first within that group),
+  // then paid (most recently paid first within that group)
+  const expenses = [...expensesRaw].sort((a, b) => {
+    if (a.status !== b.status) {
+      return a.status === "UNPAID" ? -1 : 1;
+    }
+    if (a.status === "UNPAID") {
+      return a.date.getTime() - b.date.getTime();
+    }
+    return b.date.getTime() - a.date.getTime();
+  });
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-6">Expenses</h1>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+        <h1 className="text-2xl font-semibold">Expenses</h1>
+        <MonthFilter basePath="/dashboard/expenses" current={activeFilter} />
+      </div>
 
       <ExpenseForm currency={currency} />
 
       {expenses.length === 0 ? (
-        <p className="text-sm text-zinc-400">No expenses logged yet.</p>
+        <p className="text-sm text-zinc-400">
+          {isAll ? "No expenses logged yet." : "Nothing logged for this period."}
+        </p>
       ) : (
         <ul className="space-y-1">
           {expenses.map((e) => (

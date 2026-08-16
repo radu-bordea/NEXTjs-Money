@@ -20,3 +20,11 @@ export const incomeSchema = z.object({
 
 export type IncomeFormValues = z.output<typeof incomeSchema>
 export type IncomeFormInput = z.input<typeof incomeSchema>
+
+export const budgetSchema = z.object({
+  category: z.string().trim().min(1, 'Category is required'),
+  limit: z.coerce.number().positive('Limit must be greater than 0'),
+})
+
+export type BudgetFormValues = z.output<typeof budgetSchema>
+export type BudgetFormInput = z.input<typeof budgetSchema>

@@ -17,3 +17,4 @@
 - npx prisma studio
 - npx prisma migrate dev --name add_expense_status
 - npx prisma migrate dev --name add_user_settings
+- npx prisma migrate dev --name add_budget
